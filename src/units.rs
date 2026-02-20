@@ -63,17 +63,23 @@ where
 	}
 }
 
-impl std::ops::Mul<usize> for Pixels<f32> {
-	type Output = Pixels<f32>;
+impl std::ops::Mul<usize> for Pixels<u16> {
+	type Output = Pixels<u16>;
 	fn mul(self, rhs: usize) -> Self::Output {
-		(self.value * rhs as f32).into()
+		(self.value * rhs as u16).into()
 	}
 }
 
-impl std::ops::Div<usize> for Pixels<f32> {
-	type Output = Pixels<f32>;
+impl std::ops::Div<usize> for Pixels<u16> {
+	type Output = Pixels<u16>;
 	fn div(self, rhs: usize) -> Self::Output {
-		(self.value / rhs as f32).into()
+		(self.value / rhs as u16).into()
+	}
+}
+
+impl From<Pixels<u16>> for Pixels<f32> {
+	fn from(value: Pixels<u16>) -> Self {
+		Pixels { value: value.value.into() }
 	}
 }
 

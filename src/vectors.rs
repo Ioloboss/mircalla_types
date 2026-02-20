@@ -1,5 +1,7 @@
 use std::collections::btree_map::Values;
 
+use crate::units::Pixels;
+
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
 	Vertical,
@@ -86,6 +88,15 @@ impl <T> Position<Option<T>> {
 	}
 }
 
+impl From<Position<Pixels<u16>>> for Position<Pixels<f32>> {
+	fn from(value: Position<Pixels<u16>>) -> Self {
+		Position {
+			x: value.x.into(),
+			y: value.y.into(),
+		}
+	}
+}
+
 
 
 
@@ -167,6 +178,14 @@ impl <T> Size<Option<T>> {
 	}
 }
 
+impl From<Size<Pixels<u16>>> for Size<Pixels<f32>> {
+	fn from(value: Size<Pixels<u16>>) -> Self {
+		Size {
+			width: value.width.into(),
+			height: value.height.into(),
+		}
+	}
+}
 
 
 
