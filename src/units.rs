@@ -10,14 +10,14 @@ pub struct Pixels<T> {
 
 impl <T> Pixels<T>
 where
-	T: Into<f32> + Copy
+	T: Into<f64> + Copy
 {
-	pub fn to_screen_space(&self, screen_dimension: Pixels<f32>) -> ScreenSpace {
-		(((self.value.into() / screen_dimension.value) * 2.0) - 1.0).into()
+	pub fn to_screen_space(&self, screen_dimension: Pixels<i32>) -> ScreenSpace {
+		((((self.value.into() / screen_dimension.value as f64) * 2.0) - 1.0) as f32).into()
 	}
 
-	pub fn to_screen_space_length(&self, screen_dimension: Pixels<f32>) -> ScreenSpace {
-		((self.value.into() / screen_dimension.value) * 2.0).into()
+	pub fn to_screen_space_length(&self, screen_dimension: Pixels<i32>) -> ScreenSpace {
+		(((self.value.into() / screen_dimension.value as f64) * 2.0) as f32).into()
 	}
 }
 
@@ -40,7 +40,7 @@ where
 	}
 }
 
-impl<A, B> std::ops::AddAssign<Pixels<B>> for Pixels<A>
+impl <A, B> std::ops::AddAssign<Pixels<B>> for Pixels<A>
 where
 	Pixels<A>: std::ops::Add<Pixels<B>, Output = Pixels<A>>,
 	B: Copy,
@@ -63,17 +63,34 @@ where
 	}
 }
 
-impl std::ops::Mul<usize> for Pixels<u16> {
-	type Output = Pixels<u16>;
-	fn mul(self, rhs: usize) -> Self::Output {
-		(self.value * rhs as u16).into()
+impl <A, B> std::ops::SubAssign<Pixels<B>> for Pixels<A>
+where
+	Pixels<A>: std::ops::Sub<Pixels<B>, Output = Pixels<A>>,
+	B: Copy,
+	A: Copy,
+{
+	fn sub_assign(&mut self, rhs: Pixels<B>) {
+		*self = *self - rhs;
 	}
 }
 
-impl std::ops::Div<usize> for Pixels<u16> {
-	type Output = Pixels<u16>;
+impl std::ops::Mul<usize> for Pixels<i32> {
+	type Output = Pixels<i32>;
+	fn mul(self, rhs: usize) -> Self::Output {
+		(self.value * rhs as i32).into()
+	}
+}
+
+impl std::ops::Div<usize> for Pixels<i32> {
+	type Output = Pixels<i32>;
 	fn div(self, rhs: usize) -> Self::Output {
-		(self.value / rhs as u16).into()
+		(self.value / rhs as i32).into()
+	}
+}
+
+impl From<Pixels<i32>> for Pixels<f32> {
+	fn from(value: Pixels<i32>) -> Self {
+		Pixels { value: value.value as f32 }
 	}
 }
 
@@ -83,6 +100,11 @@ impl From<Pixels<u16>> for Pixels<f32> {
 	}
 }
 
+impl From<Pixels<u16>> for Pixels<i32> {
+	fn from(value: Pixels<u16>) -> Self {
+		Pixels { value: value.value.into() }
+	}
+}
 
 // ===================================================
 // SCREEN SPACE

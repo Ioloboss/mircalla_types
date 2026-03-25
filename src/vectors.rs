@@ -1,5 +1,3 @@
-use std::collections::btree_map::Values;
-
 use crate::units::Pixels;
 
 #[derive(Debug, Clone, Copy)]
@@ -13,7 +11,7 @@ pub enum Direction {
 // POSITION
 // ===================================================
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Position<T> {
 	pub x: T,
 	pub y: T,
@@ -88,8 +86,8 @@ impl <T> Position<Option<T>> {
 	}
 }
 
-impl From<Position<Pixels<u16>>> for Position<Pixels<f32>> {
-	fn from(value: Position<Pixels<u16>>) -> Self {
+impl From<Position<Pixels<i32>>> for Position<Pixels<f32>> {
+	fn from(value: Position<Pixels<i32>>) -> Self {
 		Position {
 			x: value.x.into(),
 			y: value.y.into(),
@@ -97,7 +95,40 @@ impl From<Position<Pixels<u16>>> for Position<Pixels<f32>> {
 	}
 }
 
+impl <T> Position<T>
+where
+	T: PartialOrd + Copy
+{
+	pub fn max(&self, rhs: &Self) -> Position<T> {
+		let x = if self.x > rhs.x {
+			self.x
+		} else {
+			rhs.x
+		};
+		let y = if self.y > rhs.y {
+			self.y
+		} else {
+			rhs.y
+		};
 
+		Position { x, y }
+	}
+
+	pub fn min(&self, rhs: &Self) -> Position<T> {
+		let x = if self.x < rhs.x {
+			self.x
+		} else {
+			rhs.x
+		};
+		let y = if self.y < rhs.y {
+			self.y
+		} else {
+			rhs.y
+		};
+
+		Position { x, y }
+	}
+}
 
 
 
@@ -161,6 +192,25 @@ where
 		match dimension {
 			Dimension::Width => self.width = value,
 			Dimension::Height => self.height = value,
+		}
+	}
+}
+
+impl <T> Size<T>
+where
+	T: Clone,
+{
+	pub fn get_clone(&self, dimension: Dimension) -> T {
+		match dimension {
+			Dimension::Width => self.width.clone(),
+			Dimension::Height => self.height.clone(),
+		}
+	}
+
+	pub fn set_clone(&mut self, dimension: Dimension, value: &T) {
+		match dimension {
+			Dimension::Width => self.width = value.clone(),
+			Dimension::Height => self.height = value.clone(),
 		}
 	}
 }
@@ -244,5 +294,33 @@ impl Into<[f32; 3]> for Colour {
 			self.g,
 			self.b,
 		]
+	}
+}
+
+
+
+// ===================================================
+// ALIGNMENT
+// ===================================================
+
+#[derive(Clone, Copy)]
+pub enum Alignments {
+	Start,
+	Centre,
+	End,
+}
+
+#[derive(Clone, Copy)]
+pub struct Alignment {
+	pub x: Alignments,
+	pub y: Alignments,
+}
+
+impl Alignment {
+	pub fn get(&self, axis: Axis) -> Alignments {
+		match axis {
+			Axis::X => self.x,
+			Axis::Y => self.y,
+		}
 	}
 }
