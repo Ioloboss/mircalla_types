@@ -130,7 +130,14 @@ where
 	}
 }
 
-
+impl <T> Position<T> {
+	pub fn map<U, F>(self, f: F) -> Position<U>
+	where
+		F: Fn(T) -> U,
+	{
+		Position { x: f(self.x), y: f(self.y) }
+	}
+}
 
 
 // ===================================================
