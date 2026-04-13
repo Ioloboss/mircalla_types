@@ -74,6 +74,18 @@ where
 	}
 }
 
+impl <A, B> std::ops::Mul<Pixels<B>> for Pixels<A>
+where
+	A: std::ops::Mul + Copy,
+	B: Into<A> + Copy,
+	<A as std::ops::Mul>::Output: Copy,
+{
+	type Output = Pixels<<A as std::ops::Mul>::Output>;
+	fn mul(self, rhs: Pixels<B>) -> Self::Output {
+		Self::Output { value: self.value * rhs.value.into()}
+	}
+}
+
 impl std::ops::Mul<usize> for Pixels<i32> {
 	type Output = Pixels<i32>;
 	fn mul(self, rhs: usize) -> Self::Output {
